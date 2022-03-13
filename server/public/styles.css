@@ -1,0 +1,43 @@
+body {
+  background-color: black;
+  color: aqua;
+}
+
+#frame-presenter {
+  font-size: 150%;
+  margin-bottom: 1%;
+}
+
+#input-container {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  margin: 0;
+}
+
+#input-container > label {
+  font-size: 140%;
+  width: max-content;
+}
+
+#input-container > input[type=text] {
+  outline: none;
+  font-size: 130%;
+  width: 60px;
+  background-color: black;
+  color: aqua;
+  margin: 0 1%;
+  border: 0;
+  border-bottom: 1px solid aqua;
+  text-align: center;
+}
+
+#input-container > input[type=button] {
+  outline: none;
+  border: 1px solid aqua;
+  background-color: black;
+  color: aqua;
+  font-size: 120%;
+  font-style: italic;
+  padding: 0.5% 1%;
+}

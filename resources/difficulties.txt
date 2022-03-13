@@ -1,0 +1,9 @@
+Difficulty:
+
+1) я у мамы телепат (DIFFICULT try);
+
+2) у меня бабка гадалка в десятом колене (NORMAL tries);
+
+3) я алфавит во втором классе учил (EASY tries);
+
+4) мозга нет (NO_CHALLANGE tries);
