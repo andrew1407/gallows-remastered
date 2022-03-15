@@ -12,3 +12,9 @@ export const toStorageFormat = ({ ...data }) => {
   if ('left' in data) data.left = data.left.map(l => l ?? ' ').join('');
   return data;
 };
+
+export const filterDataFields = obj => {
+  delete obj.playing;
+  delete obj.left;
+  delete obj.multipleLetters;
+};

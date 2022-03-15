@@ -1,10 +1,12 @@
-import { fromStorageFormat, toStorageFormat } from '../formatters.js';
+import { filterDataFields, fromStorageFormat, toStorageFormat } from '../formatters.js';
 import { loadRecourse } from './loader.js';
 import stages from './stages.js';
 
-const currentStats = async ({ id, dbClient }) => ({
-  data: fromStorageFormat(await dbClient.readPlayerData(id)),
-});
+const currentStats = async ({ id, dbClient }) => {
+  const data = fromStorageFormat(await dbClient.readPlayerData(id));
+  filterDataFields(data);
+  return { data };
+};
 
 const resource = async ({ id, dbClient, resources }) => {
   const playerData = fromStorageFormat(await dbClient.readPlayerData(id));
@@ -26,9 +28,7 @@ const nextStage = async ({ id, dbClient, data, resources }) => {
   const storageData = { ...toStorageFormat(gainedData), playing: false };
   await dbClient.writePlayerData(id, storageData);
   const written = fromStorageFormat(await dbClient.readPlayerData(id));
-  delete written.playing;
-  delete written.left;
-  delete written.multipleLetters;
+  filterDataFields(written);
   return { end: false, data: written };
 };
 
