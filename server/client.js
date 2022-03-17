@@ -19,4 +19,4 @@ if (connection === connections.ws)
   clientResources.socket = new WebSocket(`ws://${host}:${port}/${strategy}`);
 else
   clientResources.fetcher = makeFetcher({ host, port });
-runApp(clientResources);
+runApp?.(clientResources);
