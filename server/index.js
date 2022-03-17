@@ -3,13 +3,13 @@ import { WebSocketServer } from 'ws';
 import { createClient } from 'redis';
 import DbClient from './dbClient.js';
 import { makeStaticHandler } from './static.js';
-import { connections, defaultStrategy, parseStrategy } from './strategies.js';
+import { connections } from './strategies.js';
 import envParams from './params.json' assert { type: 'json' };
+import { parseComponents } from './env.js';
 
 const { host, port, redis } = envParams;
 
-const { strategy, connection } = process.argv.map(parseStrategy)
-  .find(s => !!s) ?? defaultStrategy;
+const { strategy, connection } = parseComponents();
 
 const services = {
   dbClient: undefined,
@@ -22,7 +22,7 @@ await redisClient.connect();
 services.dbClient = new DbClient(redisClient);
 
 const { handleConnection, requestHandler } = await import(`./${strategy}/${connection}.js`);
-const serveStatic = makeStaticHandler(`${strategy}-${connection}`);
+const serveStatic = makeStaticHandler({ strategy, connection });
 const handleGameplay = await requestHandler?.(services.dbClient);
 services.http = createServer(async (req, res) => {
   await serveStatic(req, res);

@@ -1,13 +1,13 @@
-import { connections, defaultStrategy, parseStrategy } from './strategies.js';
-import InputReader from '../io/input.js';
 import WebSocket from 'ws';
-import envParams from './params.json' assert { type: 'json' };
+import InputReader from '../io/input.js';
+import { connections } from './strategies.js';
+import { parseComponents } from './env.js';
 import { makeFetcher } from './dataraw/clients/consoleUtils.js';
+import envParams from './params.json' assert { type: 'json' };
 
 const { host, port } = envParams;
 
-const { strategy, connection } = process.argv.map(parseStrategy)
-  .find(s => !!s) ?? defaultStrategy;
+const { strategy, connection } = parseComponents();
 
 const { runApp } = await import(`./${strategy}/clients/console/${connection}.js`);
 const clientResources = {

@@ -8,7 +8,7 @@ export const connections = {
   http: 'http',
 };
 
-export const parseStrategy = value => {
+export const parseArgv = value => {
   const [ strategy, connection = connections.ws ] = value.slice(2).split('-');
   const strategyExists = Object.values(strategies).includes(strategy);
   const connectionExists = Object.values(connections).includes(connection);
@@ -18,4 +18,4 @@ export const parseStrategy = value => {
   return { strategy, connection };
 };
 
-export const defaultStrategy = parseStrategy('--streamable');
+export const defaultStrategy = parseArgv('--streamable');

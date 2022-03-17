@@ -1,5 +1,9 @@
 {
   "host": "localhost",
   "port": 8080,
-  "redis": "redis://default:password@localhost:6379"
+  "redis": "redis://default:password@localhost:6379",
+  "components": {
+    "strategy": "streamable",
+    "connection": "ws"
+  }
 }

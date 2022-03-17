@@ -18,3 +18,9 @@ export const filterDataFields = obj => {
   delete obj.left;
   delete obj.multipleLetters;
 };
+
+export const filterEnvFields = obj => {
+  delete obj.redis;
+};
+
+
