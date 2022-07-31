@@ -6,8 +6,8 @@
   "type": "module",
   "scripts": {
     "console": "node .",
-    "server": "node server",
-    "client": "node server/client.js"
+    "server": "node --experimental-json-modules server",
+    "client": "node --experimental-json-modules server/client.js"
   },
   "repository": {
     "type": "git",

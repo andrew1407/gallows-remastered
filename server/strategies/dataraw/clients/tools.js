@@ -1,6 +1,15 @@
 import { inputMessages } from '../../../../extra.js';
 import { frameDecorator, labels } from '../../../../scenes/tools.js';
 
+export const waitForSocketConnection = async ({ socket, delay, pediod, tries }) => {
+  const readyState = 1;
+  for (let i = 0; i < tries; ++i) {
+    await delay(pediod);
+    if (socket.readyState === readyState) return;
+  }
+  throw new Error('Socket still is not connected');
+};
+
 export const makeSocketLoader = (socket, playerData) => iteartor => ({
   then(res) {
     const event = 'resource';

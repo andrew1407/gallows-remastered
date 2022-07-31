@@ -1,6 +1,6 @@
 import { setTimeout } from 'timers/promises';
 import { scenePlayer } from '../../../../../io/output.js';
-import { makeSocketScenesIterator, makeSocketLoader } from '../tools.js';
+import { makeSocketScenesIterator, makeSocketLoader, waitForSocketConnection } from '../tools.js';
 import { makeFileLoader, runScenes } from '../consoleUtils.js';
 import { consoleOutput, playerDataContainer } from '../../../../../extra.js';
 
@@ -12,7 +12,12 @@ export const runApp = async ({ socket, input }) => {
   const scenes = makeSocketScenesIterator({ resourceLoader, playerData, socket, inform });
   const playFrames = frames => scenePlayer(frames, consoleOutput, setTimeout);
   input.open();
-  await setTimeout(10);
+  await waitForSocketConnection({
+    socket,
+    delay: setTimeout,
+    pediod: 10,
+    tries: 10,
+  });
   await runScenes({ socket, scenes, input, playFrames });
   input.close();
 };
