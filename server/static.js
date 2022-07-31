@@ -10,10 +10,11 @@ const mimeTypes = {
   json: 'application/json',
   css: 'text/css',
   html: 'text/html',
+  text: 'text/plain',
 };
 
 const resourcesDir = path.join(__dirname, '..', 'resources');
-const envFile = path.join(__dirname, 'params.json');
+const envFile = path.join(__dirname, 'env.json');
 const mainTemplate = '/index.html';
 
 const staticPaths = [
@@ -53,7 +54,7 @@ export const makeStaticHandler = components => async (req, res) => {
     return res.end();
   }
   const type = filename.slice(filename.lastIndexOf('.') + 1);
-  if (type in mimeTypes) res.setHeader('Content-Type', mimeTypes[type]);
+  res.setHeader('Content-Type', mimeTypes[type] ?? mimeTypes.text);
   try {
     const entries = await readFile(fullPath);
     const fileData = fullPath === envFile ? formatParams(entries, components) : entries;

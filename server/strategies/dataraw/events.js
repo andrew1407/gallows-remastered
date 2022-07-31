@@ -1,4 +1,4 @@
-import { filterDataFields, fromStorageFormat, toStorageFormat } from '../formatters.js';
+import { filterDataFields, fromStorageFormat, toStorageFormat } from '../../formatters.js';
 import { loadRecourse } from './loader.js';
 import stages from './stages.js';
 

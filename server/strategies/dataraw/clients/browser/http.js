@@ -1,5 +1,5 @@
-import { playerDataContainer } from '../../../../extra.js';
-import { scenePlayer } from '../../../../io/output.js';
+import { playerDataContainer } from '../../../../../extra.js';
+import { scenePlayer } from '../../../../../io/output.js';
 import { delay, inputPanelSwitch, makeDataReader, runScenes, sendInput } from '../browserUtils.js';
 import { makeFetchLoader, makeFetchScenesIterator } from '../tools.js';
 

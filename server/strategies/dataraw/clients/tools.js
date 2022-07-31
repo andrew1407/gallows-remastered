@@ -1,11 +1,11 @@
-import { inputMessages } from '../../../extra.js';
-import { frameDecorator, labels } from '../../../scenes/tools.js';
+import { inputMessages } from '../../../../extra.js';
+import { frameDecorator, labels } from '../../../../scenes/tools.js';
 
-export const makeSocketLoader = socket => iteartor => ({
+export const makeSocketLoader = (socket, playerData) => iteartor => ({
   then(res) {
     const event = 'resource';
     iteartor.resolvers[event] = res;
-    socket.send(JSON.stringify({ event }));
+    socket.send(JSON.stringify({ event, id: playerData.id }));
   },
 });
 
@@ -39,7 +39,7 @@ const makeScenesIterator = ({ playerData, resourceLoader }) => ({
   },
 });
 
-export const makeSocketScenesIterator = ({ socket, playerData, resourceLoader }) => ({
+export const makeSocketScenesIterator = ({ socket, playerData, resourceLoader, inform }) => ({
   ...makeScenesIterator({ playerData, resourceLoader }),
   resolvers: {
     nextStage: null,
@@ -52,7 +52,12 @@ export const makeSocketScenesIterator = ({ socket, playerData, resourceLoader })
         const data = { input: this.input };
         const event = 'nextStage';
         this.resolvers[event] = res;
-        socket.send(JSON.stringify({ event, data }));
+        const entriesToSend = { event, data };
+        if (inform) {
+          entriesToSend.data.initial = !playerData.id;
+          entriesToSend.id = playerData.id;
+        }
+        socket.send(JSON.stringify(entriesToSend));
       },
     };
   },
@@ -63,10 +68,9 @@ export const makeSocketScenesIterator = ({ socket, playerData, resourceLoader })
     };
     socket.onmessage = e => {
       const { event, data } = JSON.parse(e.data);
-      if (this.resolvers[event]) {
-        this.resolvers[event]?.(data);
-        this.resolvers[event] = null;
-      }
+      if (!this.resolvers[event]) return;
+      this.resolvers[event]?.(data);
+      this.resolvers[event] = null;
     };
     return {
       next: async () => {

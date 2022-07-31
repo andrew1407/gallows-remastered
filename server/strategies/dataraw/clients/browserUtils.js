@@ -1,11 +1,12 @@
-import { frameDecorator, labels } from '../../../scenes/tools.js';
+import { frameDecorator, labels } from '../../../../scenes/tools.js';
 
 export const makeFetcher = ({ host, port }) => (route, data) => {
   return fetch(`http://${host}:${port}${route}`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify(data),
-  }).then(res => res.json())
+  })
+    .then(res => res.json())
     .catch(() => new Object());
 };
 

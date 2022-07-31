@@ -6,8 +6,8 @@
   "type": "module",
   "scripts": {
     "console": "node .",
-    "server": "node --experimental-json-modules server",
-    "client": "node --experimental-json-modules server/client.js"
+    "server": "node server",
+    "client": "node server/client.js"
   },
   "repository": {
     "type": "git",
@@ -21,6 +21,7 @@
   },
   "homepage": "https://github.com/Andrew1407/gallows-remastered#readme",
   "dependencies": {
+    "dgram": "^1.0.1",
     "redis": "^4.0.4",
     "uuid": "^8.3.2",
     "ws": "^8.5.0"

@@ -1,5 +1,5 @@
-import { defineStageHandlers } from '../../difficulty.js';
-import { labels } from '../../scenes/tools.js';
+import { defineStageHandlers } from '../../../difficulty.js';
+import { labels } from '../../../scenes/tools.js';
 
 const resources = {
   [labels.difficulty]: loaded => loaded.difficulty,

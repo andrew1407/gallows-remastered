@@ -1,4 +1,4 @@
-import { connections } from '../strategies.js';
+import { connections } from '../strategiesTooling.js';
 
 (async () => {
   const gameInterface = document.querySelector('#game-interface');
@@ -17,19 +17,26 @@ import { connections } from '../strategies.js';
   };
 
   const elements = { framePresenter, inputLabel, inputArea, sendButton, inputPanel };
-  const { host, port, components } = await fetch('/params.json').then(res => res.json())
+  const { host, port, components } = await fetch('/env.json').then(res => res.json());
   const { strategy, connection } = components;
-  const { runApp } = await import(`../${strategy}/clients/browser/${connection}.js`);
-  const clientResources = {
-    elements,
-    socket: undefined,
-    fetcher: undefined,
+  const loadGameplayStrategy = async () => {
+    const { runApp } = await import(`../strategies/${strategy}/clients/browser/${connection}.js`);
+    const clientResources = {
+      elements,
+      socket: undefined,
+      fetcher: undefined,
+    };
+    if (connection === connections.ws) {
+      clientResources.socket = new WebSocket(`ws://${host}:${port}/${strategy}`);
+    } else {
+      const { makeFetcher } = await import('../strategies/dataraw/clients/browserUtils.js');
+      clientResources.fetcher = makeFetcher({ host, port });
+    }
+    await runApp(clientResources);
   };
-  if (connection === connections.ws) {
-    clientResources.socket = new WebSocket(`ws://${host}:${port}/${strategy}`);
-  } else {
-    const { makeFetcher } = await import('../dataraw/clients/browserUtils.js');
-    clientResources.fetcher = makeFetcher({ host, port });
-  }
-  await runApp?.(clientResources);
+
+  loadGameplayStrategy().catch(e => {
+    console.error(e);
+    alert('Failed loading gamemode.');
+  });
 })();

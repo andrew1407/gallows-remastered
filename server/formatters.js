@@ -13,14 +13,8 @@ export const toStorageFormat = ({ ...data }) => {
   return data;
 };
 
-export const filterDataFields = obj => {
-  delete obj.playing;
-  delete obj.left;
-  delete obj.multipleLetters;
-};
+const removeFields = (obj, ...fields) => fields.forEach(f => delete obj[f]);
 
-export const filterEnvFields = obj => {
-  delete obj.redis;
-};
+export const filterDataFields = obj => removeFields(obj, 'playing', 'left', 'multipleLetters');
 
-
+export const filterEnvFields = obj => removeFields(obj, 'redis', 'upd', 'ws');

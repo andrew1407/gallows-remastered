@@ -1,5 +1,5 @@
-import { labels } from '../../../../scenes/tools.js';
-import { inputMessages } from '../../../../extra.js';
+import { labels } from '../../../../../scenes/tools.js';
+import { inputMessages } from '../../../../../extra.js';
 
 const sendInput = (socket, inputArea) => {
   const input = inputArea.value;

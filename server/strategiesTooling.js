@@ -6,6 +6,7 @@ export const strategies = {
 export const connections = {
   ws: 'ws',
   http: 'http',
+  udp: 'udp',
 };
 
 export const parseArgv = value => {

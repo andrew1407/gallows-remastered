@@ -9,12 +9,15 @@ const showFrame = frame => {
 class FramePresenter {
   #hashed = null;
   #currentScene = null;
+
   get #inputMessage() {
     return inputMessages[this.#currentScene]?.concat(' ') ?? '';
   }
+
   get #hash() {
     return this.#hashed;
   }
+
   set #hash(frame) {
     const shouldBeHashed = [labels.difficulty];
     const hashable = shouldBeHashed.includes(this.#currentScene);
@@ -22,13 +25,14 @@ class FramePresenter {
     if (!hashable && this.#hashed) this.#hashed = null;
   }
 
-  frameListener(e) {
-    const { frame, scene } = JSON.parse(e.data);
+  frameListener(data) {
+    const { frame, scene } = JSON.parse(data);
     this.#currentScene = scene;
     this.#hash = frame;
     const output = this.#hash ?? this.#composeScene(frame);
     showFrame(output);
   }
+  
   async sendInput(socket, input) {
     if (this.#hash) showFrame(this.#hash);
     const data = await input.read(this.#inputMessage);
@@ -43,7 +47,7 @@ class FramePresenter {
 export const runApp = async ({ socket, input }) => {
   const presenter = new FramePresenter();
   socket.onclose = () => input.close();
-  socket.onmessage = e => presenter.frameListener(e);
+  socket.onmessage = e => presenter.frameListener(e.data);
   input.open();
   while (socket.readyState !== socket.CLOSED)
     await presenter.sendInput(socket, input);

@@ -1,18 +1,15 @@
 import { setTimeout } from 'timers/promises';
-import { defineStageHandlers, difficultyLevel } from '../../difficulty.js';
-import { scenePlayer } from '../../io/output.js';
-import { handleInput } from '../../scenes/gameplay.js';
-import { labels } from '../../scenes/tools.js';
-import { frameDecorator } from '../../scenes/tools.js';
+import { defineStageHandlers, difficultyLevel } from '../../../difficulty.js';
+import { scenePlayer } from '../../../io/output.js';
+import { handleInput } from '../../../scenes/gameplay.js';
+import { labels } from '../../../scenes/tools.js';
+import { frameDecorator } from '../../../scenes/tools.js';
 
 const streamOutput = (socket, scene) => frame => new Promise((res, rej) => {
   if (socket.readyState === socket.CLOSED) return res();
   const data = JSON.stringify({ frame, scene });
-  socket.send(data, err => {
-    if (err) rej(err);
-    else res();
-  });
-})
+  socket.send(data, err => err ? rej(err) : res());
+});
 
 const streamFrames = (socket, frames, scene) => (
   scenePlayer(frames, streamOutput(socket, scene), setTimeout)

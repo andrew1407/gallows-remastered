@@ -1,7 +1,7 @@
 import path from 'path';
 import { fileURLToPath } from 'url';
-import { defaultStrategy, parseArgv } from './strategies.js';
-import envParams from './params.json' assert { type: 'json' };
+import { defaultStrategy, parseArgv } from './strategiesTooling.js';
+import envParams from './env.json' assert { type: 'json' };
 
 export const getEnv = metaUrl => {
   const __filename = fileURLToPath(metaUrl);

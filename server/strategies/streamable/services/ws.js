@@ -1,12 +1,12 @@
 import { v4 as uuid4 } from 'uuid';
-import { fromStorageFormat, toStorageFormat } from '../formatters.js';
-import { initialStages, execStage } from './stages.js';
-import { loadData } from '../setup.js';
-import { makePlayerDataValidator } from '../../scenes/difficulty.js';
+import { fromStorageFormat, toStorageFormat } from '../../../formatters.js';
+import { initialStages, execStage } from '../stages.js';
+import { loadData } from '../../../setup.js';
+import { makePlayerDataValidator } from '../../../../scenes/difficulty.js';
 
 const closed = s => s.readyState === s.CLOSED;
 
-const connectionHandler = (dbClient, resources) => async socket => {
+const makeConnectionHandler = (dbClient, resources) => async socket => {
   const id = uuid4();
   socket.onclose = () => dbClient.removePlayer(id);
   socket.onmessage = async e => {
@@ -37,9 +37,13 @@ const connectionHandler = (dbClient, resources) => async socket => {
   await dbClient.writePlayerData(id, toStorageFormat(data));
 };
 
-export const handleConnection = async ({ dbClient, ws: wsServer }) => {
+export const handleConnection = async (services, staticHandler) => {
   const resources = await loadData();
   resources.createPlayerData = makePlayerDataValidator(resources.words);
-  const onSocketConnection = connectionHandler(dbClient, resources);
-  wsServer.on('connection', onSocketConnection);
+  const onSocketConnection = makeConnectionHandler(services.dbClient, resources);
+  services.ws.on('connection', onSocketConnection);
+  services.http.on('request', async (req, res) => {
+    await staticHandler(req, res);
+    res.end();
+  });
 };

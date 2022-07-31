@@ -1,6 +1,6 @@
-import { difficultyLevel } from '../../difficulty.js';
-import { handleInput } from '../../scenes/gameplay.js';
-import { labels} from '../../scenes/tools.js';
+import { difficultyLevel } from '../../../difficulty.js';
+import { handleInput } from '../../../scenes/gameplay.js';
+import { labels} from '../../../scenes/tools.js';
 
 export default {
   [labels.difficulty]: async ({ input, resources }) => {
