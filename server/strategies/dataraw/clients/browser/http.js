@@ -1,12 +1,12 @@
 import { playerDataContainer } from '../../../../../extra.js';
 import { scenePlayer } from '../../../../../io/output.js';
-import { delay, inputPanelSwitch, makeDataReader, runScenes, sendInput } from '../browserUtils.js';
+import { delay, inputPanelSwitch, makeInputResolver, runScenes, sendInput } from '../browserUtils.js';
 import { makeFetchLoader, makeFetchScenesIterator } from '../tools.js';
 
 export const runApp = async ({ fetcher, elements }) => {
   const { sendButton, inputArea, inputLabel, framePresenter } = elements;
   const playerData = playerDataContainer();
-  const dataContainer = makeDataReader();
+  const dataContainer = makeInputResolver();
   const showFrame = frame => framePresenter.textContent = frame;
   const playFrames = frames => scenePlayer(frames, showFrame, delay);
   const resourceLoader = makeFetchLoader(fetcher, playerData);

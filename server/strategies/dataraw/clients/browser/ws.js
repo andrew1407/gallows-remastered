@@ -1,12 +1,12 @@
 import { scenePlayer } from '../../../../io/output.js';
 import { makeSocketScenesIterator, makeSocketLoader, waitForSocketConnection } from '../tools.js';
-import { delay, inputPanelSwitch, makeDataReader, runScenes, sendInput } from '../browserUtils.js';
+import { delay, inputPanelSwitch, makeInputResolver, runScenes, sendInput } from '../browserUtils.js';
 import { playerDataContainer } from '../../../../extra.js';
 
 export const runApp = async ({ socket, elements }) => {
   const { sendButton, inputArea, inputLabel, framePresenter } = elements;
   const playerData = playerDataContainer();
-  const dataContainer = makeDataReader();
+  const dataContainer = makeInputResolver();
   const showFrame = frame => framePresenter.textContent = frame;
   const playFrames = frames => scenePlayer(frames, showFrame, delay);
   const resourceLoader = makeSocketLoader(socket, playerData);

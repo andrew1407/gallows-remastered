@@ -36,17 +36,23 @@ export const inputPanelSwitch = ({ inputArea, inputPanel, sendButton }) => ({
   },
 });
 
-export const makeDataReader = () => ({
-  resolver: null,
-  set value(data) {
-    this.resolver?.(data);
-  },
-  get value() {
-    return {
-      then: res => this.resolver = res,
-    };
-  }
-});
+export const makeInputResolver = () => {
+  let resolver = null;
+  const useResolver = ({ val = null, resolve = null }) => {
+    resolver?.(val);
+    resolver = resolve;
+  };
+
+  return {
+    set value(val) {
+      useResolver({ val });
+    },
+
+    get value() {
+      return { then: resolve => useResolver({ resolve }) };
+    }
+  };
+};
 
 export const runScenes = async ({ socket, scenes, inputLabel, playFrames, dataContainer, inputPanel }) => {
   for await (const scene of scenes) {

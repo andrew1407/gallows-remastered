@@ -23,7 +23,7 @@ class SocketInterfaceAdapter {
   }
 
   set onmessage(fn) {
-    this.#socket.on('message', (data) => fn({ data }));
+    this.#socket.on('message', data => fn({ data }));
   }
 
   set onclose(fn) {

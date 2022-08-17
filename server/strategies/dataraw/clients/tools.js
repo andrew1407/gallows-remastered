@@ -7,7 +7,7 @@ export const waitForSocketConnection = async ({ socket, delay, pediod, tries }) 
     await delay(pediod);
     if (socket.readyState === readyState) return;
   }
-  throw new Error('Socket still is not connected');
+  throw new Error('Socket wasn\'t not connected');
 };
 
 export const makeSocketLoader = (socket, playerData) => iteartor => ({
