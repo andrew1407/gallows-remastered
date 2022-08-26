@@ -31,14 +31,14 @@ const shutdown = async () => {
   ));
   
   try {
+    services.udp?.close();
+    await closing(services.ws);
+    await closing(services.http);
     await redisClient.FLUSHALL();
     await redisClient.QUIT();
-    await closing(services.http);
-    await closing(services.udp);
-    services.ws?.close();
     console.log();
     process.exit(0);
-  } catch(e) {
+  } catch (e) {
     console.error('\n', e);
     process.exit(1);
   }
@@ -57,7 +57,7 @@ if (connection === connections.ws)
     path: '/' + strategy,
   });
 
-if (connection == connections.udp) services.udp = dgram.createSocket('udp4').close();
+if (connection == connections.udp) services.udp = dgram.createSocket('udp4');
 
 await handleConnection?.(services, serveStatic);
 

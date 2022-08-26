@@ -8,21 +8,35 @@ import { makeFetcher } from './strategies/dataraw/clients//tools.js';
 import envParams from './env.json' assert { type: 'json' };
 
 const { host, port } = envParams;
-
 const { strategy, connection } = parseComponents();
 
 const strategyPath = joinPath('strategies', strategy, 'clients/console', connection + '.js');
 const { runApp } = await import('./' + strategyPath);
-const clientResources = {
-  input: new InputReader(),
+
+const services = {
+  input: undefined,
   socket: undefined,
   fetcher: undefined,
 };
+
+const shutdown = async () => {
+  try {
+    services.socket?.close();
+    console.log();
+    process.exit(0);
+  } catch (e) {
+    console.error('\n', e);
+    process.exit(1);
+  }
+};
+
+services.input = new InputReader({ onClose: shutdown });
+
 if (connection === connections.ws)
-  clientResources.socket = new WebSocket(`ws://${host}:${port}/${strategy}`);
+  services.socket = new WebSocket(`ws://${host}:${port}/${strategy}`);
 else if (connection === connections.udp)
-  clientResources.socket = dgram.createSocket('udp4');
+  services.socket = dgram.createSocket('udp4');
 else
-  clientResources.fetcher = makeFetcher({ host, port });
+  services.fetcher = makeFetcher({ host, port });
   
-runApp?.(clientResources);
+runApp?.(services);

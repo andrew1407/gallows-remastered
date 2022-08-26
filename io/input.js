@@ -6,12 +6,19 @@ const defaultOptions = {
 
 export default class InputReader {
   #rl = null;
+  #onClose = null;
+
+  constructor({ onClose }) {
+    this.#onClose = onClose;
+  }
 
   open() {
     this.#rl = readline.createInterface({
       input: process.stdin,
       output: process.stdout,
     });
+    
+    if (this.#onClose) this.#rl.on('close', this.#onClose);
   }
 
   close() {
