@@ -8,7 +8,7 @@ export default class InputReader {
   #rl = null;
   #onClose = null;
 
-  constructor({ onClose }) {
+  constructor({ onClose } = {}) {
     this.#onClose = onClose;
   }
 

@@ -56,7 +56,13 @@ const iterable = {
 };
 
 const scenes = scenesIterator(iterable, labels.difficulty);
-const input = new InputReader();
+const input = new InputReader({
+  onClose: () => {
+    console.log();
+    process.exit(0);
+  },
+});
+
 input.open();
 for await (const scene of scenes) {
   if (!scene.interractive) continue;
