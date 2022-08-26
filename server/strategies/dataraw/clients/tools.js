@@ -1,5 +1,16 @@
 import { inputMessages } from '../../../../extra.js';
+import { parseInputData } from '../loader.js';
 import { frameDecorator, labels } from '../../../../scenes/tools.js';
+
+export const makeFetcher = ({ host, port }) => (route, data) => {
+  return fetch(`http://${host}:${port}${route}`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(data),
+  })
+    .then(res => res.json())
+    .catch(() => new Object());
+};
 
 export const waitForSocketConnection = async ({ socket, delay, pediod, tries }) => {
   const readyState = 1;
@@ -76,7 +87,7 @@ export const makeSocketScenesIterator = ({ socket, playerData, resourceLoader, i
       for (const key in this.resolvers) this.resolvers[key]?.(null);
     };
     socket.onmessage = e => {
-      const { event, data } = JSON.parse(e.data);
+      const { event, data } = parseInputData(e.data);
       if (!this.resolvers[event]) return;
       this.resolvers[event]?.(data);
       this.resolvers[event] = null;

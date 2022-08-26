@@ -1,31 +1,9 @@
-import { request } from 'http';
 import { loadFrames as loadDifficulty } from '../../../../scenes/difficulty.js';
 import { loadFrames as loadPrologue } from '../../../../scenes/prologue.js';
 import { frameLoaders as loadGameplay } from '../../../../scenes/gameplay.js';
 import { loadFrames as loadWin } from '../../../../scenes/win.js';
 import { frameLoaders as loadLoss } from '../../../../scenes/loss.js';
 import { frameDecorator, labels } from '../../../../scenes/tools.js';
-
-export const makeFetcher = ({ host, port }) => async (route, data) => new Promise((res, rej) => {
-  const bodyStringified = JSON.stringify(data);
-  const headers = {
-    'Content-Type': 'application/json',
-    'Constent-Length': Buffer.byteLength(bodyStringified),
-  };
-  const options = { host, port, headers, method: 'POST', path: route };
-  const req = request(options, async clientRes => {
-    const chunks = [];
-    for await (const chunk of clientRes) chunks.push(chunk);
-    const body = Buffer.concat(chunks);
-    try {
-      const parsed = JSON.parse(body);
-      res(parsed);
-    } catch {
-      res({});
-    }
-  });
-  req.on('error', rej).end(bodyStringified);
-});
 
 export const makeFileLoader = playerData => {
   const difficultyLoader = {

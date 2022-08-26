@@ -3,17 +3,12 @@ import { makePlayerDataValidator } from '../../../../scenes/difficulty.js';
 import { loadData } from '../../../setup.js';
 import events from '../events.js';
 import { labels } from '../../../../scenes/tools.js';
+import { parseInputData } from '../loader.js';
 
 const sendData = (server, data, info) => server.send(JSON.stringify(data), info.port, info.address);
 
 const makeRequestHandler = (server, dbClient, resources) => async (message, info) => {
-  let parsed;
-  try {
-    parsed = JSON.parse(message);
-  } catch {
-    return;
-  }
-  const { id, event, data } = parsed ?? {};
+  const { id, event, data } = parseInputData(message);
   const eventHandler = events[event];
   if (!eventHandler) return;
   const stageEvent = event === 'nextStage';

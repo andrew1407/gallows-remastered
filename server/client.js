@@ -4,7 +4,7 @@ import { join as joinPath } from 'path';
 import InputReader from '../io/input.js';
 import { connections } from './strategiesTooling.js';
 import { parseComponents } from './env.js';
-import { makeFetcher } from './strategies/dataraw/clients/consoleUtils.js';
+import { makeFetcher } from './strategies/dataraw/clients//tools.js';
 import envParams from './env.json' assert { type: 'json' };
 
 const { host, port } = envParams;

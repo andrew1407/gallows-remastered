@@ -29,7 +29,7 @@ import { connections } from '../strategiesTooling.js';
     if (connection === connections.ws) {
       clientResources.socket = new WebSocket(`ws://${host}:${port}/${strategy}`);
     } else {
-      const { makeFetcher } = await import('../strategies/dataraw/clients/browserUtils.js');
+      const { makeFetcher } = await import('../strategies/dataraw/clients/tools.js');
       clientResources.fetcher = makeFetcher({ host, port });
     }
     await runApp(clientResources);

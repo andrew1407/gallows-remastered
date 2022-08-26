@@ -3,6 +3,7 @@ import { makePlayerDataValidator } from '../../../../scenes/difficulty.js';
 import { labels } from '../../../../scenes/tools.js';
 import { loadData } from '../../../setup.js';
 import events from '../events.js';
+import { parseInputData } from '../loader.js';
 
 const routes = {
   '/currentStats': events.currentStats,
@@ -21,12 +22,7 @@ const readJson = async req => {
   const chunks = [];
   for await (const chunk of req) chunks.push(chunk);
   const body = Buffer.concat(chunks);
-  try {
-    const parsed = JSON.parse(body);
-    return parsed;
-  } catch {
-    return {};
-  }
+  return parseInputData(body);
 };
 
 const makeRequestHandler = (dbClient, resources) => async (req, res) => {

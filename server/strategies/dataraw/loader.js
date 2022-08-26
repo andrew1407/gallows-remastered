@@ -13,3 +13,12 @@ export const loadRecourse = (playerData, loaded) => {
   const { stage, difficulty, tries } = playerData;
   return resources[stage](loaded, difficulty, tries);
 };
+
+export const parseInputData = data => {
+  try {
+    const parsed = JSON.parse(data);
+    return parsed;
+  } catch {
+    return {};
+  }
+};

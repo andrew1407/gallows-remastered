@@ -19,10 +19,33 @@ const services = {
   udp: undefined,
 };
 
+
 const redisClient = createClient({ url: redis });
 await redisClient.connect();
 services.dbClient = new DbClient(redisClient);
 services.http = createServer();
+
+const shutdown = async () => {
+  const closing = service => new Promise((res, rej) => (
+    service ? service.close(e => e ? rej(e) : res()) : res()
+  ));
+  
+  try {
+    await redisClient.FLUSHALL();
+    await redisClient.QUIT();
+    await closing(services.http);
+    await closing(services.udp);
+    services.ws?.close();
+    console.log();
+    process.exit(0);
+  } catch(e) {
+    console.error('\n', e);
+    process.exit(1);
+  }
+};
+
+process.on('SIGINT', shutdown);
+process.on('SIGTERM', shutdown);
 
 const strategyPath = joinPath('strategies', strategy, 'services', connection + '.js');
 const { handleConnection } = await import('./' + strategyPath);
@@ -34,7 +57,7 @@ if (connection === connections.ws)
     path: '/' + strategy,
   });
 
-if (connection == connections.udp) services.udp = dgram.createSocket('udp4');
+if (connection == connections.udp) services.udp = dgram.createSocket('udp4').close();
 
 await handleConnection?.(services, serveStatic);
 
@@ -44,4 +67,3 @@ if (connection === connections.udp) {
   const udpHost = envParams.udp?.host ?? host;
   services.udp.bind(udpPort, udpHost);
 }
-

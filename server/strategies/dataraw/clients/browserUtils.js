@@ -1,15 +1,5 @@
 import { frameDecorator, labels } from '../../../../scenes/tools.js';
 
-export const makeFetcher = ({ host, port }) => (route, data) => {
-  return fetch(`http://${host}:${port}${route}`, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify(data),
-  })
-    .then(res => res.json())
-    .catch(() => new Object());
-};
-
 export const delay = msec => new Promise(r => setTimeout(r, msec));
 
 export const sendInput = (inputArea, dataContainer) => {
@@ -38,14 +28,14 @@ export const inputPanelSwitch = ({ inputArea, inputPanel, sendButton }) => ({
 
 export const makeInputResolver = () => {
   let resolver = null;
-  const useResolver = ({ val = null, resolve = null }) => {
-    resolver?.(val);
+  const useResolver = ({ data = null, resolve = null }) => {
+    resolver?.(data);
     resolver = resolve;
   };
 
   return {
-    set value(val) {
-      useResolver({ val });
+    set value(data) {
+      useResolver({ data });
     },
 
     get value() {
