@@ -19,7 +19,7 @@ const services = {
   fetcher: undefined,
 };
 
-const shutdown = async () => {
+const shutdown = () => {
   try {
     services.socket?.close();
     console.log();
