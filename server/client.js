@@ -19,7 +19,16 @@ const services = {
   fetcher: undefined,
 };
 
+const serviceConnections = {
+  [connections.http]: () => services.fetcher = makeFetcher({ host, port }),
+  [connections.ws]: () => services.socket = new WebSocket(`ws://${host}:${port}/${strategy}`),
+  [connections.udp]: () => services.socket = dgram.createSocket('udp4'),
+};
+
 const shutdown = () => {
+  const forceQuitDelay = 2000;
+  setTimeout(process.exit, forceQuitDelay, 1).unref();
+
   try {
     services.socket?.close();
     console.log();
@@ -31,12 +40,5 @@ const shutdown = () => {
 };
 
 services.input = new InputReader({ onClose: shutdown });
-
-if (connection === connections.ws)
-  services.socket = new WebSocket(`ws://${host}:${port}/${strategy}`);
-else if (connection === connections.udp)
-  services.socket = dgram.createSocket('udp4');
-else
-  services.fetcher = makeFetcher({ host, port });
-  
+serviceConnections[connection]?.();
 runApp?.(services);

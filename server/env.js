@@ -12,7 +12,7 @@ export const getEnv = metaUrl => {
 export const parseComponents = () => {
   const params = { ...defaultStrategy };
   const { components } = envParams;
-  if (components && components?.strategy) {
+  if (components?.strategy) {
     Object.assign(params, components);
     return params;
   }
