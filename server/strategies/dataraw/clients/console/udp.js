@@ -1,4 +1,4 @@
-import { setTimeout } from 'timers/promises';
+import { setTimeout } from 'node:timers/promises';
 import { scenePlayer } from '../../../../../io/output.js';
 import { makeSocketScenesIterator, makeSocketLoader } from '../tools.js';
 import { makeFileLoader, runScenes } from '../consoleUtils.js';

@@ -1,5 +1,5 @@
-import { readFile, access } from 'fs/promises';
-import path from 'path';
+import { readFile, access } from 'node:fs/promises';
+import path from 'node:path';
 import { getEnv } from './env.js';
 import { filterEnvFields } from './formatters.js';
 

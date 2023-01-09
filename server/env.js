@@ -1,5 +1,5 @@
-import path from 'path';
-import { fileURLToPath } from 'url';
+import path from 'node:path';
+import { fileURLToPath } from 'node:url';
 import { defaultStrategy, parseArgv } from './strategiesTooling.js';
 import envParams from './env.json' assert { type: 'json' };
 

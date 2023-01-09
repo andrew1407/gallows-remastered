@@ -1,4 +1,4 @@
-import { v4 as uuid4 } from 'uuid';
+import crypto from 'node:crypto';
 import { makePlayerDataValidator } from '../../../../scenes/difficulty.js';
 import { loadData } from '../../../setup.js';
 import events from '../events.js';
@@ -10,7 +10,7 @@ const sendData = (socket, data) => new Promise((res, rej) => (
 ));
 
 const makeConnectionHandler = (dbClient, resources) => async socket => {
-  const id = uuid4();
+  const id = crypto.randomUUID();
   socket.onclose = () => dbClient.removePlayer(id);
   socket.onmessage = async e => {
     const { event, data } = parseInputData(e.data);

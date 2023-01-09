@@ -37,6 +37,6 @@ import { connections } from '../strategiesTooling.js';
 
   loadGameplayStrategy().catch(e => {
     console.error(e);
-    alert('Failed loading gamemode.');
+    alert('Failed loading a gamemode.');
   });
 })();

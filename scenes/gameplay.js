@@ -1,4 +1,4 @@
-import { defineStageHandlers, difficultyLevel, triesCount } from '../difficulty.js';
+import { defineStageHandlers } from '../difficulty.js';
 import { guessLetters } from '../gameControls.js';
 import { loadStage } from '../loaders.js';
 import { gameplay } from './playerFormatters.js';

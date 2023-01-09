@@ -1,4 +1,4 @@
-import { v4 as uuid4 } from 'uuid';
+import crypto from 'node:crypto';
 import { makePlayerDataValidator } from '../../../../scenes/difficulty.js';
 import { labels } from '../../../../scenes/tools.js';
 import { loadData } from '../../../setup.js';
@@ -10,7 +10,7 @@ const routes = {
   '/resource': events.resource,
   '/nextStage': async params => {
     if (!params.data.initial) return events.nextStage(params);
-    const id = uuid4();
+    const id = crypto.randomUUID();
     const stage = labels.difficulty;
     const data = { id, stage };
     await params.dbClient.writePlayerData(id, { stage, playing: false });

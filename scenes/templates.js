@@ -1,4 +1,4 @@
-import { setTimeout } from 'timers/promises';
+import { setTimeout } from 'node:timers/promises';
 import { scenePlayer } from '../io/output.js';
 import * as difficultyScene from './difficulty.js';
 import * as gameplayScene from './gameplay.js';

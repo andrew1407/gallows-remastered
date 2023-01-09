@@ -1,5 +1,5 @@
-import { createServer } from 'http';
-import { join as joinPath } from 'path';
+import { createServer } from 'node:http';
+import { join as joinPath } from 'node:path';
 import { WebSocketServer } from 'ws';
 import dgram from 'dgram';
 import { createClient } from 'redis';
@@ -40,7 +40,7 @@ const serviceConnections = {
     path: '/' + strategy,
   }),
   [connections.udp]: () => {
-    services.udp = dgram.createSocket('udp4');
+    services.udp = dgram.createSocket({ type: 'udp4' });
     const udpPort = envParams.udp?.port ?? port + 1;
     const udpHost = envParams.udp?.host ?? host;
     services.udp.bind(udpPort, udpHost);
@@ -52,21 +52,26 @@ await redisClient.connect();
 services.dbClient = new DbClient(redisClient);
 services.http = createServer();
 
-const shutdown = async () => {
-  const forceQuitDelay = 5000;
-  setTimeout(process.exit, forceQuitDelay, 1).unref();
-  
-  try {
-    for (const key in servicesShutdown)
-      if (services[key]) await servicesShutdown[key]();
-    console.log();
-    process.exit(0);
-  } catch (e) {
-    console.error('\n', e);
-    process.exit(1);
+const shutdownOnce = () => {
+  let called = false;
+  return async () => {
+    if (called) return;
+    called = true;
+    const forceQuitDelay = 5000;
+    setTimeout(process.exit, forceQuitDelay, 1).unref();
+    try {
+      for (const key in servicesShutdown)
+        if (services[key]) await servicesShutdown[key]();
+      console.log();
+      process.exit(0);
+    } catch (e) {
+      console.error('\n', e);
+      process.exit(1);
+    }
   }
 };
 
+const shutdown = shutdownOnce();
 process.on('SIGINT', shutdown);
 process.on('SIGTERM', shutdown);
 

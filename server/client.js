@@ -1,6 +1,6 @@
+import { join as joinPath } from 'node:path';
 import WebSocket from 'ws';
 import dgram from 'dgram';
-import { join as joinPath } from 'path';
 import InputReader from '../io/input.js';
 import { connections } from './strategiesTooling.js';
 import { parseComponents } from './env.js';
@@ -22,13 +22,12 @@ const services = {
 const serviceConnections = {
   [connections.http]: () => services.fetcher = makeFetcher({ host, port }),
   [connections.ws]: () => services.socket = new WebSocket(`ws://${host}:${port}/${strategy}`),
-  [connections.udp]: () => services.socket = dgram.createSocket('udp4'),
+  [connections.udp]: () => services.socket = dgram.createSocket({ type: 'udp4' }),
 };
 
 const shutdown = () => {
   const forceQuitDelay = 2000;
   setTimeout(process.exit, forceQuitDelay, 1).unref();
-
   try {
     services.socket?.close();
     console.log();

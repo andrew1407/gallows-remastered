@@ -1,4 +1,4 @@
-import { v4 as uuid4 } from 'uuid';
+import crypto from 'node:crypto';
 import { fromStorageFormat, toStorageFormat } from '../../../formatters.js';
 import { initialStages, execStage } from '../stages.js';
 import { loadData } from '../../../setup.js';
@@ -31,7 +31,7 @@ const makeRequestHandler = (server, dbClient, resources) => async (message, info
   const { id, initial, input } = parsed;
   const socket = makeSocketWrapper(server, info);
   if (initial) {
-    const id = uuid4();
+    const id = crypto.randomUUID();
     await { then: res => socket.send('id: ' + id, res) };
     const startStage = Symbol.for('start');
     const { data } = await execStage(initialStages[startStage], { socket, resources });

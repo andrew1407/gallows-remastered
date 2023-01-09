@@ -28,13 +28,11 @@ const scenesIterator = (iterable, initial) => ({
   },
   
   [Symbol.asyncIterator]() {
-    const next = () => this.next();
-    return { next };
+    return { next: () => this.next() };
   },
 });
 
-const playerData = playerDataContainer();
-const iterable = {
+const iteravbleStages = playerData => ({
   [labels.difficulty]: models.makeDifficultyScene(playerData, consoleOutput),
   [labels.prologue]: models.makePlayableScene({
     loader: prologueScene.loadFrames,
@@ -53,8 +51,10 @@ const iterable = {
     current: labels.loss,
     output: consoleOutput,
   }),
-};
+});
 
+const playerData = playerDataContainer();
+const iterable = iteravbleStages(playerData);
 const scenes = scenesIterator(iterable, labels.difficulty);
 const input = new InputReader({
   onClose: () => {
