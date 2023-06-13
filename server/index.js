@@ -25,20 +25,15 @@ const servicesShutdown = {
     services.ws.clients.forEach(c => c.close());
     services.ws.close(e => e ? rej(e) : res());
   }),
-  http: () => new Promise((res, rej) => (
-    services.http.close(e => e ? rej(e) : res())
-  )),
-  dbClient: async () => {
-    await redisClient.FLUSHALL();
-    await redisClient.QUIT();
-  },
+  http: () => new Promise((res, rej) => services.http.close(e => e ? rej(e) : res())),
+  dbClient: () => redisClient.FLUSHALL().then(() => redisClient.QUIT()),
 };
 
 const serviceConnections = {
-  [connections.ws]: () => services.ws = new WebSocketServer({
+  [connections.ws]: () => void(services.ws = new WebSocketServer({
     server: services.http,
     path: '/' + strategy,
-  }),
+  })),
   [connections.udp]: () => {
     services.udp = dgram.createSocket({ type: 'udp4' });
     const udpPort = envParams.udp?.port ?? port + 1;
