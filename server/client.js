@@ -1,4 +1,5 @@
 import { join as joinPath } from 'node:path';
+import { Socket } from 'node:net';
 import WebSocket from 'ws';
 import dgram from 'dgram';
 import InputReader from '../io/input.js';
@@ -20,16 +21,23 @@ const services = {
 };
 
 const serviceConnections = {
-  [connections.http]: () => services.fetcher = makeFetcher({ host, port }),
-  [connections.ws]: () => services.socket = new WebSocket(`ws://${host}:${port}/${strategy}`),
-  [connections.udp]: () => services.socket = dgram.createSocket({ type: 'udp4' }),
+  [connections.http]: () => void(services.fetcher = makeFetcher({ host, port })),
+  [connections.ws]: () => void(services.socket = new WebSocket(`ws://${host}:${port}/${strategy}`)),
+  [connections.udp]: () => void(services.socket = dgram.createSocket({ type: 'udp4' })),
+  [connections.tcp]: () => new Promise(r => {
+    services.socket = new Socket();
+    const tcpPort = envParams.tcp?.port ?? port + 1;
+    const tcpHost = envParams.tcp?.host ?? host;
+    services.socket.connect(tcpPort, tcpHost, r);
+  }),
 };
 
 const shutdown = () => {
   const forceQuitDelay = 2000;
   setTimeout(process.exit, forceQuitDelay, 1).unref();
   try {
-    services.socket?.close();
+    services.socket?.close?.();
+    services.socket?.destroy?.();
     console.log();
     process.exit(0);
   } catch (e) {
@@ -39,5 +47,5 @@ const shutdown = () => {
 };
 
 services.input = new InputReader({ onClose: shutdown });
-serviceConnections[connection]?.();
+await serviceConnections[connection]?.();
 runApp?.(services);

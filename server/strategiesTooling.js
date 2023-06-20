@@ -7,6 +7,7 @@ export const connections = {
   ws: 'ws',
   http: 'http',
   udp: 'udp',
+  tcp: 'tcp',
 };
 
 export const parseArgv = value => {

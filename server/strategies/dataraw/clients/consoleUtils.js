@@ -1,3 +1,7 @@
+import { setTimeout } from 'node:timers/promises';
+import { scenePlayer } from '../../../../io/output.js';
+import { makeSocketScenesIterator } from './tools.js';
+import { consoleOutput, playerDataContainer } from '../../../../extra.js';
 import { loadFrames as loadDifficulty } from '../../../../scenes/difficulty.js';
 import { loadFrames as loadPrologue } from '../../../../scenes/prologue.js';
 import { frameLoaders as loadGameplay } from '../../../../scenes/gameplay.js';
@@ -40,4 +44,17 @@ export const runScenes = async ({ socket, scenes, input, playFrames }) => {
       scenes.playing = false;
     }
   }
+};
+
+export const makeAppLauncher = ({ loaderFactory, adapter = null }) => async ({ socket: socketRaw, input }) => {
+  const playerData = playerDataContainer();
+  const socket = adapter ? adapter(socketRaw) : socketRaw;
+  const resourceLoader = loaderFactory({ socket, playerData });
+  const inform = true;
+  const scenes = makeSocketScenesIterator({ resourceLoader, playerData, socket, inform });
+  const playFrames = frames => scenePlayer(frames, consoleOutput, setTimeout);
+  input.open();
+  await runScenes({ socket, scenes, input, playFrames });
+  input.close();
+  socketRaw.close();
 };

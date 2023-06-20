@@ -3,23 +3,19 @@ import { fromStorageFormat, toStorageFormat } from '../../../formatters.js';
 import { initialStages, execStage } from '../stages.js';
 import { loadData } from '../../../setup.js';
 import { makePlayerDataValidator } from '../../../../scenes/difficulty.js';
+import { closed } from '../consoleUtils.js';
 
 const makeSocketWrapper = (server, info) => ({
   readyState: 0,
-
   get CLOSED() {
     return 1;
   },
-
   send: (data, clb) => server.send(data, info.port, info.address, clb),
-
   close(clb) {
     this.readyState = this.CLOSED;
     clb?.();
   },
 });
-
-const closed = s => s.readyState === s.CLOSED;
 
 const makeRequestHandler = (server, dbClient, resources) => async (message, info) => {
   let parsed;

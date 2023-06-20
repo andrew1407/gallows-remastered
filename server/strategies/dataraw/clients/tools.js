@@ -151,3 +151,41 @@ export const makeFetchScenesIterator = ({ fetcher, playerData, resourceLoader })
     };
   }
 });
+
+export const socketStates = Object.freeze({
+  OPEN: 1,
+  NONE: 2,
+  CLOSED: 3,
+});
+
+export class SocketInterfaceAdapter {
+  #socket = null;
+  #dataEvent = null;
+  #sendAction = null;
+  #state = socketStates.OPEN;
+
+  constructor({ socket, dataEvent, sendAction }) {
+    this.#socket = socket;
+    this.#dataEvent = dataEvent;
+    this.#sendAction = sendAction;
+  }
+
+  set onmessage(fn) {
+    this.#socket.on(this.#dataEvent, data => fn({ data }));
+  }
+
+  set onclose(fn) {
+    this.#socket.on('close', e => {
+      this.#state = socketStates.CLOSED;
+      fn(e);
+    });
+  }
+
+  get readyState() {
+    return this.#state;
+  }
+
+  send(data) {
+    this.#sendAction(this.#socket, data);
+  }
+}

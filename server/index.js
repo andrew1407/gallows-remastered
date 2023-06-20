@@ -1,5 +1,6 @@
 import { createServer } from 'node:http';
 import { join as joinPath } from 'node:path';
+import net from 'node:net'
 import { WebSocketServer } from 'ws';
 import dgram from 'dgram';
 import { createClient } from 'redis';
@@ -17,16 +18,7 @@ const services = {
   http: undefined,
   ws: undefined,
   udp: undefined,
-};
-
-const servicesShutdown = {
-  udp: () => services.udp.close(),
-  ws: () => new Promise(async (res, rej) => {
-    services.ws.clients.forEach(c => c.close());
-    services.ws.close(e => e ? rej(e) : res());
-  }),
-  http: () => new Promise((res, rej) => services.http.close(e => e ? rej(e) : res())),
-  dbClient: () => redisClient.FLUSHALL().then(() => redisClient.QUIT()),
+  tcp: undefined,
 };
 
 const serviceConnections = {
@@ -40,12 +32,29 @@ const serviceConnections = {
     const udpHost = envParams.udp?.host ?? host;
     services.udp.bind(udpPort, udpHost);
   },
+  [connections.tcp]: () => {
+    services.tcp = net.createServer();
+    const tcpPort = envParams.tcp?.port ?? port + 1;
+    const tcpHost = envParams.tcp?.host ?? host;
+    services.tcp.listen(tcpPort, tcpHost);
+  },
 };
 
 const redisClient = createClient({ url: redis });
 await redisClient.connect();
 services.dbClient = new DbClient(redisClient);
 services.http = createServer();
+
+const servicesShutdown = {
+  udp: () => services.udp.close(),
+  tcp: () => services.tcp.close(),
+  ws: () => new Promise(async (res, rej) => {
+    services.ws.clients.forEach(c => c.close());
+    services.ws.close(e => e ? rej(e) : res());
+  }),
+  http: () => new Promise((res, rej) => services.http.close(e => e ? rej(e) : res())),
+  dbClient: () => services.dbClient.namespaceCleanup().finally(() => redisClient.QUIT()),
+};
 
 const shutdownOnce = () => {
   let called = false;

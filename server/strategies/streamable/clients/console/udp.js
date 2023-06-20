@@ -4,7 +4,7 @@ import envParams from '../../../../env.json' assert { type: 'json' };
 const port = envParams.udp.port ?? envParams.port + 1;
 const host = envParams.udp.host ?? envParams.host;
 
-class SocketInterfaceAdapter {
+class UdpSocketInterfaceAdapter {
   #socket = null;
   #id = null;
   readyState = 0;
@@ -26,9 +26,9 @@ class SocketInterfaceAdapter {
   }
 
   set onclose(fn) {
-    this.#socket.on('close', () => {
+    this.#socket.on('close', e => {
       this.readyState = this.CLOSED;
-      fn();
+      fn(e);
     });
   }
 
@@ -49,6 +49,6 @@ class SocketInterfaceAdapter {
 }
 
 export const runApp = ({ socket, input }) => {
-  const socketWrapped = new SocketInterfaceAdapter(socket);
+  const socketWrapped = new UdpSocketInterfaceAdapter(socket);
   return runConsoleApp({ input, socket: socketWrapped });
 };
