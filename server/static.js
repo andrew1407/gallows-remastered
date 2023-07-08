@@ -5,13 +5,13 @@ import { filterEnvFields } from './formatters.js';
 
 const { __dirname } = getEnv(import.meta.url);
 
-const mimeTypes = {
+const mimeTypes = Object.freeze({
   js: 'application/javascript',
   json: 'application/json',
   css: 'text/css',
   html: 'text/html',
   text: 'text/plain',
-};
+});
 
 const resourcesDir = path.join(__dirname, '..', 'resources');
 const envFile = path.join(__dirname, 'env.json');

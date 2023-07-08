@@ -58,9 +58,9 @@ export const win = boxTemplate.bind(null, frames => [{
   repeat: 100,
 }]);
 
-export const loss = {
+export const loss = Object.freeze({
   DIFFICULT: difficultTemplate,
   NORMAL: defaultTemplate,
   EASY: defaultTemplate,
   NO_CHALLANGE: boxTemplate.bind(null, singleFrameTemplate),
-};
+});

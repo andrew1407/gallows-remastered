@@ -3,9 +3,9 @@ import { loss } from './playerFormatters.js';
 
 const loadScenes = (...loaders) => Promise.all(loaders.map(l => l()));
 
-export const frameLoaders = {
+export const frameLoaders = Object.freeze({
   DIFFICULT: () => loss.DIFFICULT(loadScenes(loadLossDifficultLevel, loadLoss)),
   NORMAL: () => loss.NORMAL(loadScenes(loadHanging, loadLoss)),
   EASY: () => loss.EASY(loadScenes(loadHanging, loadLoss)),
   NO_CHALLANGE: () => loss.NO_CHALLANGE(loadLossMessage()),
-};
+});

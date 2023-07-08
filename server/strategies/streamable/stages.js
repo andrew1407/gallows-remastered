@@ -84,11 +84,11 @@ const stages = {
   },
 };
 
-export const initialStages = {
+export const initialStages = Object.freeze({
   [Symbol.for('start')]: { label: labels.difficulty, action: 'previous' },
   [labels.difficulty]: { label: labels.difficulty, action: 'default' },
   [labels.gameplay]: { label: labels.gameplay, action: 'default' },
-};
+});
 
 export const execStage = ({ label, action }, params) => {
   if (!(label in stages)) return;

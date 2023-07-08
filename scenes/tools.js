@@ -1,12 +1,12 @@
 import { difficultyLevel, triesCount } from '../difficulty.js';
 
-export const labels = {
+export const labels = Object.freeze({
   difficulty: 'difficulty',
   prologue: 'prologue',
   gameplay: 'gameplay',
   loss: 'loss',
   win: 'win',
-};
+});
 
 export const frameDecorator = (frames, decor) => {
   const { guessed, tries, difficulty } = decor;
