@@ -20,3 +20,27 @@ To run online client app:
 ```bash
 npm run client
 ```
+
+## Gameplay
+
+Choose difficulty:
+
+![Difficulties](./Doc/Resources/difficulties.png)
+
+Main gameplay (wordguessing):
+
+![Gameplay 1](./Doc/Resources/gameplay-1.png)
+
+![Gameplay 2](./Doc/Resources/gameplay-2.png)
+
+Loss cases:
+
+![Loss 1](./Doc/Resources/loss-1.png)
+
+![Loss 2](./Doc/Resources/loss-2.png)
+
+![Loss 3](./Doc/Resources/loss-3.png)
+
+Win case (guess a word):
+
+![Win](./Doc/Resources/win.png)
