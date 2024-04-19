@@ -1,5 +1,6 @@
 import { readFile, access } from 'node:fs/promises';
 import path from 'node:path';
+import { parse as parseUrl } from 'node:url';
 import { getEnv } from './env.js';
 import { filterEnvFields } from './formatters.js';
 
@@ -46,7 +47,7 @@ const formatParams = (raw, components) => {
 
 export const makeStaticHandler = components => async (req, res) => {
   if (req.method !== 'GET') return;
-  const file = req.url;
+  const file = parseUrl(req.url, true).pathname;
   const filename = file === '/' ? mainTemplate : file;
   const fullPath = await buildFullPath(filename);
   if (!fullPath) {
