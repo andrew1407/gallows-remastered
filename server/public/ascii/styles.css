@@ -80,6 +80,16 @@ body {
   }
 }
 
+#color-picker-anchor {
+  position: fixed;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  border: 0;
+  opacity: 0;
+  pointer-events: none;
+}
+
 #reset-settings {
   width: 35px;
   cursor: pointer;

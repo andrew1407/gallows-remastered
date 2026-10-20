@@ -1,3 +1,9 @@
+// Chrome on Linux draws the color picker as an in-page popup below the input's left edge and only
+// keeps it within the screen, so near the window edges it gets clipped; it is opened from an anchor with room instead
+const PICKER_POPUP_SIZE = Object.freeze({ width: 260, height: 300 });
+
+const fitToWindow = (position, size, windowSize) => Math.max(0, Math.min(position, windowSize - size));
+
 export default class VisualSettings {
   #settingsElements = null;
   #gameplayElements = null;
@@ -57,8 +63,34 @@ export default class VisualSettings {
     this.#settingsElements.gameFontColor.oninput = e => this.setFontColor(e.target.value);
     this.#settingsElements.gameBackgroundColor.oninput = e => this.setBackgroundColor(e.target.value);
     this.#settingsElements.resetSettings.onclick = () => this.resetSettings();
+    this.#bindPickerAnchor();
     this.resetSettings();
     return this;
+  }
+
+  #bindPickerAnchor() {
+    const { pickerAnchor, gameFontColor, gameBackgroundColor } = this.#settingsElements;
+    if (!pickerAnchor?.showPicker) return;
+    let target = null;
+    pickerAnchor.oninput = e => {
+      target.value = e.target.value;
+      target.dispatchEvent(new Event('input'));
+    };
+    for (const input of [gameFontColor, gameBackgroundColor]) {
+      input.onclick = e => {
+        target = input;
+        const { left, bottom } = input.getBoundingClientRect();
+        pickerAnchor.style.left = `${fitToWindow(left, PICKER_POPUP_SIZE.width, window.innerWidth)}px`;
+        pickerAnchor.style.top = `${fitToWindow(bottom, PICKER_POPUP_SIZE.height, window.innerHeight)}px`;
+        pickerAnchor.value = input.value;
+        try {
+          pickerAnchor.showPicker();
+          e.preventDefault();
+        } catch {
+          // falls back to the input's own picker
+        }
+      };
+    }
   }
 
   #setDefaultColorInput() {

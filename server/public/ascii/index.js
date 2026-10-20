@@ -48,6 +48,7 @@ const getSettingsElements = () => ({
   gameFontColor: document.querySelector('#settings-container > input[name="game-font-color"]'),
   gameBackgroundColor: document.querySelector('#settings-container > input[name="game-background-color"]'),
   resetSettings: document.querySelector('#reset-settings'),
+  pickerAnchor: document.querySelector('#color-picker-anchor'),
 });
 
 const bindFullscreenEvent = gameInterface => {
