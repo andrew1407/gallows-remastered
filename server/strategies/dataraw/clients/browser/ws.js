@@ -1,7 +1,7 @@
-import { scenePlayer } from '../../../../io/output.js';
+import { scenePlayer } from '../../../../../io/output.js';
 import { makeSocketScenesIterator, makeSocketLoader, waitForSocketConnection } from '../tools.js';
 import { delay, inputPanelSwitch, makeInputResolver, runScenes, sendInput } from '../browserUtils.js';
-import { playerDataContainer } from '../../../../extra.js';
+import { playerDataContainer } from '../../../../../extra.js';
 
 export const runApp = async ({ socket, elements }) => {
   const { sendButton, inputArea, inputLabel, framePresenter } = elements;

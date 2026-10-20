@@ -1,8 +1,8 @@
 import { readFile, access } from 'node:fs/promises';
 import path from 'node:path';
-import { parse as parseUrl } from 'node:url';
 import { getEnv } from './env.js';
 import { filterEnvFields } from './formatters.js';
+import { loadData } from './setup.js';
 
 const { __dirname } = getEnv(import.meta.url);
 
@@ -12,22 +12,30 @@ const mimeTypes = Object.freeze({
   css: 'text/css',
   html: 'text/html',
   text: 'text/plain',
+  png: 'image/png',
+  jpg: 'image/jpeg',
+  ttf: 'font/ttf',
+  ico: 'image/x-icon',
+  svg: 'image/svg+xml',
 });
 
-const resourcesDir = path.join(__dirname, '..', 'resources');
-const envFile = path.join(__dirname, 'env.json');
 const mainTemplate = '/index.html';
+const hiddenPath = /\/(\.|node_modules\/)/;
 
-const staticPaths = [
-  path.join(__dirname, 'public'),
-  __dirname,
-  path.join(__dirname, '..'),
-];
+export const defaultLocations = Object.freeze({
+  resourcesDir: path.join(__dirname, '..', 'resources'),
+  envFile: path.join(__dirname, 'env.json'),
+  staticPaths: [
+    path.join(__dirname, 'public'),
+    __dirname,
+    path.join(__dirname, '..'),
+  ],
+});
 
 const fileExists = file => access(file).then(() => true).catch(() => false);
 
-const buildFullPath = async file => {
-  if (!file.startsWith('/') || file.includes('..')) return null;
+const buildFullPath = async (file, { staticPaths, resourcesDir }) => {
+  if (!file.startsWith('/') || file.includes('..') || hiddenPath.test(file)) return null;
   const compareMapper = staticPaths.map(p => {
     const fullPath = path.join(p, file);
     return fileExists(fullPath).then(ex => ex ? fullPath : null);
@@ -38,30 +46,38 @@ const buildFullPath = async file => {
   return fullPath.startsWith(resourcesDir) ? null : fullPath;
 };
 
-const formatParams = (raw, components) => {
-  const parsed = JSON.parse(raw);
-  parsed.components = components;
-  filterEnvFields(parsed);
-  return JSON.stringify(parsed);
+const formatParams = (env, components) => {
+  const params = { ...env, components };
+  filterEnvFields(params);
+  return JSON.stringify(params);
 };
 
-export const makeStaticHandler = components => async (req, res) => {
-  if (req.method !== 'GET') return;
-  const file = parseUrl(req.url, true).pathname;
-  const filename = file === '/' ? mainTemplate : file;
-  const fullPath = await buildFullPath(filename);
-  if (!fullPath) {
-    res.statusCode = 404;
-    return res.end();
-  }
-  const type = filename.slice(filename.lastIndexOf('.') + 1);
-  res.setHeader('Content-Type', mimeTypes[type] ?? mimeTypes.text);
-  try {
-    const entries = await readFile(fullPath);
-    const fileData = fullPath === envFile ? formatParams(entries, components) : entries;
-    res.end(fileData);
-  } catch {
-    res.statusCode = 404;
-    res.end();
-  }
+const getType = filename => mimeTypes[filename.slice(filename.lastIndexOf('.') + 1)] ?? mimeTypes.text;
+
+export const makeStaticHandler = ({ components, env }, locations = defaultLocations) => {
+  let resources = null;
+  const virtualFiles = {
+    '/env.json': () => formatParams(env, components),
+    '/resources.json': () => resources ??= loadData().then(loaded => JSON.stringify(loaded)),
+  };
+
+  return async (req, res) => {
+    if (req.method !== 'GET') return;
+    const file = new URL(req.url, 'http://localhost').pathname;
+    const filename = file === '/' ? mainTemplate : file;
+    res.setHeader('Content-Type', getType(filename));
+    if (Object.hasOwn(virtualFiles, filename)) return res.end(await virtualFiles[filename]());
+    const fullPath = await buildFullPath(filename, locations);
+    if (!fullPath) {
+      res.statusCode = 404;
+      return res.end();
+    }
+    try {
+      const entries = await readFile(fullPath);
+      res.end(fullPath === locations.envFile ? formatParams(env, components) : entries);
+    } catch {
+      res.statusCode = 404;
+      res.end();
+    }
+  };
 };

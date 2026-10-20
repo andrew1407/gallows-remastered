@@ -7,16 +7,15 @@ const defaultOptions = {
 export default class InputReader {
   #rl = null;
   #onClose = null;
+  #streams = null;
 
-  constructor({ onClose } = {}) {
+  constructor({ onClose, input = process.stdin, output = process.stdout } = {}) {
     this.#onClose = onClose;
+    this.#streams = { input, output };
   }
 
   open() {
-    this.#rl = readline.createInterface({
-      input: process.stdin,
-      output: process.stdout,
-    });
+    this.#rl = readline.createInterface(this.#streams);
     
     if (this.#onClose) this.#rl.on('close', this.#onClose);
   }

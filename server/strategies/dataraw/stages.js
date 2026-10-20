@@ -1,5 +1,5 @@
 import { difficultyLevel } from '../../../difficulty.js';
-import { handleInput } from '../../../scenes/gameplay.js';
+import { applyGuess } from '../../../gameControls.js';
 import { labels} from '../../../scenes/tools.js';
 
 export default {
@@ -12,7 +12,7 @@ export default {
   },
   [labels.prologue]: () => ({ stage: labels.gameplay }),
   [labels.gameplay]: async ({ playerData, input }) => {
-    const handled = handleInput(input, playerData);
+    const handled = applyGuess(input, playerData);
     const failed = 'tries' in handled;
     const loss = failed && !handled.tries;
     if (loss) return { ...handled, stage: labels.loss };

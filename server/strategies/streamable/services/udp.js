@@ -2,7 +2,7 @@ import crypto from 'node:crypto';
 import { fromStorageFormat, toStorageFormat } from '../../../formatters.js';
 import { initialStages, execStage } from '../stages.js';
 import { loadData } from '../../../setup.js';
-import { makePlayerDataValidator } from '../../../../scenes/difficulty.js';
+import { makePlayerDataValidator } from '../../../../gameControls.js';
 import { closed } from '../consoleUtils.js';
 
 const makeSocketWrapper = (server, info) => ({

@@ -1,16 +1,14 @@
 import { runApp as runConsoleApp } from '../consoleTools.js';
-import envParams from '../../../../env.json' assert { type: 'json' };
-
-const port = envParams.udp.port ?? envParams.port + 1;
-const host = envParams.udp.host ?? envParams.host;
 
 class UdpSocketInterfaceAdapter {
   #socket = null;
   #id = null;
+  #address = null;
   readyState = 0;
 
-  constructor(socket) {
+  constructor(socket, address) {
     this.#socket = socket;
+    this.#address = address;
   }
 
   get CLOSED() {
@@ -37,6 +35,7 @@ class UdpSocketInterfaceAdapter {
   }
 
   #sendData(data, clb = null) {
+    const { port, host } = this.#address;
     this.#socket.send(JSON.stringify(data), port, host, clb);
   }
 
@@ -48,7 +47,9 @@ class UdpSocketInterfaceAdapter {
   }
 }
 
-export const runApp = ({ socket, input }) => {
-  const socketWrapped = new UdpSocketInterfaceAdapter(socket);
+export const runApp = ({ socket, input, env }) => {
+  const port = env.udp?.port ?? env.port + 1;
+  const host = env.udp?.host ?? env.host;
+  const socketWrapped = new UdpSocketInterfaceAdapter(socket, { port, host });
   return runConsoleApp({ input, socket: socketWrapped });
 };

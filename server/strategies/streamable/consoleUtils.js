@@ -2,7 +2,7 @@ import crypto from 'node:crypto';
 import { fromStorageFormat, toStorageFormat } from '../../formatters.js';
 import { initialStages, execStage } from './stages.js';
 import { loadData } from '../../setup.js';
-import { makePlayerDataValidator } from '../../../scenes/difficulty.js';
+import { makePlayerDataValidator } from '../../../gameControls.js';
 
 export const closed = s => s.readyState === s.CLOSED;
 

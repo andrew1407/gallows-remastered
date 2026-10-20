@@ -1,9 +1,9 @@
 import crypto from 'node:crypto';
-import { makePlayerDataValidator } from '../../../../scenes/difficulty.js';
 import { loadData } from '../../../setup.js';
 import events from '../events.js';
 import { labels } from '../../../../scenes/tools.js';
 import { parseInputData } from '../loader.js';
+import { makeResources } from '../routes.js';
 
 const sendData = (server, data, info) => server.send(JSON.stringify(data), info.port, info.address);
 
@@ -31,9 +31,7 @@ const makeRequestHandler = (server, dbClient, resources) => async (message, info
 };
 
 export const handleConnection = async (services, staticHandler) => {
-  const loaded = await loadData();
-  const createPlayerData = makePlayerDataValidator(loaded.words);
-  const handleMessage = makeRequestHandler(services.udp, services.dbClient, { createPlayerData, loaded });
+  const handleMessage = makeRequestHandler(services.udp, services.dbClient, makeResources(await loadData()));
   services.udp.on('message', handleMessage);
   services.http.on('request', async (req, res) => {
     await staticHandler(req, res);

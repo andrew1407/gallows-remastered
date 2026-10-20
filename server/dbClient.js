@@ -28,4 +28,8 @@ export default class DbClient {
     const found = await this.#connection.KEYS(`${PREFIX}:*`);
     await Promise.all(found.map(k => this.#connection.DEL(k)));
   }
+
+  quit() {
+    return this.#connection.QUIT();
+  }
 }

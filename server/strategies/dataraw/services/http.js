@@ -1,22 +1,13 @@
-import crypto from 'node:crypto';
-import { makePlayerDataValidator } from '../../../../scenes/difficulty.js';
-import { labels } from '../../../../scenes/tools.js';
 import { loadData } from '../../../setup.js';
-import events from '../events.js';
 import { parseInputData } from '../loader.js';
+import { makeResources, makeRouter } from '../routes.js';
 
-const routes = {
-  '/currentStats': events.currentStats,
-  '/resource': events.resource,
-  '/nextStage': async params => {
-    if (!params.data.initial) return events.nextStage(params);
-    const id = crypto.randomUUID();
-    const stage = labels.difficulty;
-    const data = { id, stage };
-    await params.dbClient.writePlayerData(id, { stage, playing: false });
-    return { data };
-  },
-};
+const corsHeaders = Object.freeze({
+  'Access-Control-Allow-Origin': '*',
+  'Access-Control-Allow-Methods': 'POST, OPTIONS',
+  'Access-Control-Allow-Headers': 'Content-Type',
+  'Access-Control-Allow-Private-Network': 'true',
+});
 
 const readJson = async req => {
   const chunks = [];
@@ -25,41 +16,22 @@ const readJson = async req => {
   return parseInputData(body);
 };
 
-const makeRequestHandler = (dbClient, resources) => async (req, res) => {
+const makeRequestHandler = router => async (req, res) => {
+  for (const header in corsHeaders) res.setHeader(header, corsHeaders[header]);
+  if (req.method === 'OPTIONS') return void(res.statusCode = 204);
   if (req.method !== 'POST') return;
-  const route = req.url;
-  if (!(route in routes)) {
-    res.statusCode = 404;
-    return res.end();
-  }
-  const { id, data } = await readJson(req);
-  if (!(id || data)) {
-    res.statusCode = 403;
-    return res.end();
-  }
-  if (id && !(await dbClient.playerExists(id))) {
-    res.statusCode = 404;
-    return res.end();
-  }
-  const stageRoute = route === '/nextStage';
-  if (!(id || stageRoute || data?.initial)) {
-    res.statusCode = 403;
-    return res.end();
-  }
-  const handled = await routes[route]({ dbClient, resources, data, id });
-  if (handled.end) await dbClient.removePlayer(id);
-  res.end(JSON.stringify(handled));
+  const [status, body] = await router(req.url, await readJson(req));
+  res.statusCode = status;
+  if (body) res.write(JSON.stringify(body));
 };
 
 export const handleConnection = async (services, staticHandler) => {
-  const loaded = await loadData();
-  const createPlayerData = makePlayerDataValidator(loaded.words);
-  const resources = { loaded, createPlayerData };
-  const handleGameplay = makeRequestHandler(services.dbClient, resources);
+  const resources = makeResources(await loadData());
+  const handleGameplay = makeRequestHandler(makeRouter(services.dbClient, resources));
   services.http.on('request', async (req, res) => {
     await staticHandler(req, res);
     if (req.method === 'GET') return res.end();
-    await handleGameplay?.(req, res);
+    await handleGameplay(req, res);
     res.end();
   });
 };

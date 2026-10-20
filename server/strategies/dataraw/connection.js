@@ -1,12 +1,15 @@
 import crypto from 'node:crypto';
-import { makePlayerDataValidator } from '../../../scenes/difficulty.js';
 import { loadData } from '../../setup.js';
 import events from './events.js';
 import { labels } from '../../../scenes/tools.js';
 import { parseInputData } from './loader.js';
+import { makeResources } from './routes.js';
+
+const isGone = socket => [socket.CLOSING, socket.CLOSED].includes(socket.readyState);
 
 const sendData = (socket, data) => new Promise((res, rej) => {
-  socket.send(JSON.stringify(data), err => err ? rej(err) : res());
+  if (isGone(socket)) return res();
+  socket.send(JSON.stringify(data), err => err && !isGone(socket) ? rej(err) : res());
 });
 
 export const makeConnectionHandler = (dbClient, resources) => async socket => {
@@ -26,9 +29,7 @@ export const makeConnectionHandler = (dbClient, resources) => async socket => {
 }
 
 export const makeServiceDescriptor = ({ service, connectionAdapter }) => async (services, staticHandler) => {
-  const loaded = await loadData();
-  const createPlayerData = makePlayerDataValidator(loaded.words);
-  const handleConnection = makeConnectionHandler(services.dbClient, { createPlayerData, loaded });
+  const handleConnection = makeConnectionHandler(services.dbClient, makeResources(await loadData()));
   const connectionHandler = !connectionAdapter ? handleConnection : s => handleConnection(connectionAdapter(s));
   services[service].on('connection', connectionHandler);
   services.http.on('request', async (req, res) => {

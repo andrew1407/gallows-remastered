@@ -1,4 +1,5 @@
 import { runApp as runConsoleApp } from '../consoleTools.js';
+import { makeMessagesReader } from '../../../../strategiesTooling.js';
 
 class TcpSocketInterfaceAdapter {
   #socket = null;
@@ -13,7 +14,11 @@ class TcpSocketInterfaceAdapter {
   }
 
   set onmessage(fn) {
-    this.#socket.on('data', data =>  fn({ data }));
+    const readMessages = makeMessagesReader();
+    this.#socket.setEncoding('utf8');
+    this.#socket.on('data', chunk => {
+      for (const data of readMessages(chunk)) fn({ data });
+    });
   }
 
   set onclose(fn) {

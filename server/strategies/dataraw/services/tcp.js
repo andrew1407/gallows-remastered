@@ -22,7 +22,7 @@ const makeSocketWrapper = socket => ({
 
   close(clb) {
     this.readyState = this.CLOSED;
-    clb?.();
+    socket.end(clb);
   },
 });
 

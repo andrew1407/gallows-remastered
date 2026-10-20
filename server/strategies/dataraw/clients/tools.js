@@ -1,9 +1,10 @@
 import { inputMessages } from '../../../../extra.js';
 import { parseInputData } from '../loader.js';
-import { frameDecorator, labels } from '../../../../scenes/tools.js';
+import { frameDecorator, isInterractive, labels } from '../../../../scenes/tools.js';
+import { makeMessagesReader } from '../../../strategiesTooling.js';
 
-export const makeFetcher = ({ host, port }) => (route, data) => {
-  return fetch(`http://${host}:${port}${route}`, {
+export const makeFetcher = ({ host, port, origin = `http://${host}:${port}` }) => (route, data) => {
+  return fetch(origin + route, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify(data),
@@ -46,7 +47,7 @@ const makeScenesIterator = ({ playerData, resourceLoader }) => ({
   hashedValue: null,
   input: '',
 
-  interractive: ({ playerData: { stage } }) => [labels.gameplay, labels.difficulty].includes(stage),
+  interractive: ({ playerData: { stage } }) => isInterractive(stage),
 
   async getValue() {
     if (!this.hashedValue) this.hashedValue = {
@@ -130,7 +131,7 @@ export const makeFetchScenesIterator = ({ fetcher, playerData, resourceLoader })
           id: playerData.id,
           data: { input: this.input, initial: !playerData.id },
         });
-        if (end) {
+        if (end || !data) {
           this.playing = false;
           return { done: true };
         }
@@ -171,7 +172,11 @@ export class SocketInterfaceAdapter {
   }
 
   set onmessage(fn) {
-    this.#socket.on(this.#dataEvent, data => fn({ data }));
+    const readMessages = makeMessagesReader();
+    this.#socket.setEncoding?.('utf8');
+    this.#socket.on(this.#dataEvent, chunk => {
+      for (const data of readMessages(chunk)) fn({ data });
+    });
   }
 
   set onclose(fn) {

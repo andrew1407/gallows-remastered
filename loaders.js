@@ -1,7 +1,8 @@
 import { readFile, readdir } from 'node:fs/promises';
 import { join } from 'node:path';
+import { fileURLToPath } from 'node:url';
 
-const RESOURCE_FOLDER = './resources';
+const RESOURCE_FOLDER = fileURLToPath(new URL('./resources', import.meta.url));
 
 const loadFile = (...dest) => readFile(join(RESOURCE_FOLDER, ...dest), 'utf-8');
 

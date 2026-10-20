@@ -1,7 +1,7 @@
 import { setTimeout } from 'node:timers/promises';
 import { defineStageHandlers, difficultyLevel } from '../../../difficulty.js';
 import { scenePlayer } from '../../../io/output.js';
-import { handleInput } from '../../../scenes/gameplay.js';
+import { applyGuess } from '../../../gameControls.js';
 import { labels } from '../../../scenes/tools.js';
 import { frameDecorator } from '../../../scenes/tools.js';
 
@@ -48,7 +48,7 @@ const stages = {
       return null;
     },
     default: async ({ socket, resources, data, input }) => {
-      const handled = handleInput(input, data);
+      const handled = applyGuess(input, data);
       const failed = 'tries' in handled;
       const lost = failed && !handled.tries;
       const won = !failed && handled.guessed?.every(l => !!l);

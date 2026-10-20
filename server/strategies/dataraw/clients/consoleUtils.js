@@ -46,6 +46,8 @@ export const runScenes = async ({ socket, scenes, input, playFrames }) => {
   }
 };
 
+const closeSocket = socket => socket.close ? socket.close() : socket.destroy();
+
 export const makeAppLauncher = ({ loaderFactory, adapter = null }) => async ({ socket: socketRaw, input }) => {
   const playerData = playerDataContainer();
   const socket = adapter ? adapter(socketRaw) : socketRaw;
@@ -56,5 +58,5 @@ export const makeAppLauncher = ({ loaderFactory, adapter = null }) => async ({ s
   input.open();
   await runScenes({ socket, scenes, input, playFrames });
   input.close();
-  socketRaw.close();
+  closeSocket(socketRaw);
 };

@@ -6,25 +6,57 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <link rel="icon" href="./images/logo.png" type="image/x-icon">
   <title>Gallows</title>
-  <link rel="stylesheet" href="./styles.css">
-  <script src="index.js" type="module" defer></script>
+  <link rel="stylesheet" href="./ascii/styles.css">
+  <link rel="stylesheet" href="./sprites/styles.css">
+  <script src="./index.js" type="module"></script>
 </head>
 <body>
-  <div id="game-interface">
-    <pre id="frame-presenter"></pre>
-    <div id="input-container">
-      <label>Input:</label>
-      <input type="text" autofocus>
-      <input type="button" value="confirm">
+  <div id="ascii-version" hidden>
+    <div id="game-interface">
+      <pre id="frame-presenter"></pre>
+      <div id="input-container">
+        <label>Input:</label>
+        <input type="text" autofocus>
+        <input type="button" value="confirm">
+      </div>
+    </div>
+
+    <div id="game-settings">
+      <img id="toggle-settings" src="./images/settings.png" />
+      <div id="settings-container">
+        <input type="color" name="game-font-color">
+        <input type="color" name="game-background-color">
+        <img id="reset-settings" src="./images/reset.png" />
+      </div>
     </div>
   </div>
 
-  <div id="game-settings">
-    <img id="toggle-settings" src="./images/settings.png" />
-    <div id="settings-container">
-      <input type="color" name="game-font-color">
-      <input type="color" name="game-background-color">
-      <img id="reset-settings" src="./images/reset.png" />
+  <div id="sprites-version" hidden>
+    <div id="sprites-stage">
+      <canvas id="sprites-canvas"></canvas>
+
+      <div id="output-tabs">
+        <div id="tab-word" class="tab"></div>
+        <div id="tab-message" class="tab"></div>
+        <div id="tab-tries" class="tab"></div>
+        <div id="tab-character-dialogue" class="tab"></div>
+        <div id="tab-runner-dialogue" class="tab"></div>
+      </div>
+
+      <div id="gameplay-input">
+        <label id="letter-input"><input type="text" name="letter" autocomplete="off" spellcheck="false" aria-label="Input"></label>
+        <button id="submit-button" type="button" aria-label="Submit"></button>
+        <button id="restart-button" type="button" aria-label="Restart"><img src="./sprites/assets/ui/restart.png" alt=""></button>
+        <button id="info-button" type="button" aria-label="Info"><img src="./sprites/assets/ui/info.png" alt=""></button>
+        <button id="exit-button" type="button" aria-label="Exit"><img src="./sprites/assets/ui/exit.png" alt=""></button>
+      </div>
+
+      <div id="start-options">
+        <div id="game-title">Gallows Game</div>
+        <button id="play-button" type="button" aria-label="Play"><img src="./sprites/assets/ui/play.png" alt=""></button>
+        <label id="offline-toggle"><input type="checkbox" name="offline" checked><span class="toggle-box"></span><span class="toggle-label">Offline</span></label>
+        <label id="online-address"><input type="text" name="address" placeholder="address" spellcheck="false" autocomplete="off"></label>
+      </div>
     </div>
   </div>
 </body>
