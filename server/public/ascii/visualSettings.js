@@ -35,12 +35,25 @@ export default class VisualSettings {
     this.setBackgroundColor(this.#defalutPallete.backgroundColor);
   }
 
+  get settingsOpened() {
+    return window.getComputedStyle(this.#settingsElements.settingsContainer).display === 'flex';
+  }
+
+  toggleSettings(opened = !this.settingsOpened) {
+    this.#settingsElements.settingsContainer.style.display = opened ? 'flex' : 'none';
+    const { inputArea } = this.#gameplayElements;
+    if (!opened && !inputArea.disabled) inputArea.focus();
+  }
+
   setInitialBehaviour() {
-    this.#settingsElements.toggleSettings.onclick = () => {
-      const containerStyle = window.getComputedStyle(this.#settingsElements.settingsContainer);
-      const visible = containerStyle.display === 'flex';
-      this.#settingsElements.settingsContainer.style.display = visible ? 'none' : 'flex';
-    };
+    this.#settingsElements.toggleSettings.onclick = () => this.toggleSettings();
+    document.addEventListener('click', e => {
+      if (this.settingsOpened && !this.#settingsElements.gameSettings.contains(e.target))
+        this.toggleSettings(false);
+    });
+    document.addEventListener('keydown', e => {
+      if (e.key === 'Escape' && this.settingsOpened) this.toggleSettings(false);
+    });
     this.#settingsElements.gameFontColor.oninput = e => this.setFontColor(e.target.value);
     this.#settingsElements.gameBackgroundColor.oninput = e => this.setBackgroundColor(e.target.value);
     this.#settingsElements.resetSettings.onclick = () => this.resetSettings();

@@ -42,6 +42,7 @@ const getGameplayElements = () => ({
 });
 
 const getSettingsElements = () => ({
+  gameSettings: document.querySelector('#game-settings'),
   toggleSettings: document.querySelector('#toggle-settings'),
   settingsContainer: document.querySelector('#settings-container'),
   gameFontColor: document.querySelector('#settings-container > input[name="game-font-color"]'),
@@ -78,6 +79,8 @@ export const launch = async () => {
     if (input.length > 1) elements.inputArea.value = input.at(-1);
   };
 
+  // autofocus is skipped while the version container is still hidden on page load
+  elements.inputArea.focus();
   bindFullscreenEvent(gameInterface);
   const { host, port, components: { strategy, connection } } = await loadEnv();
   const options = { host, port, strategy, connection, elements };
