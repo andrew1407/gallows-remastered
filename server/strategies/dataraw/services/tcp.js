@@ -1,5 +1,5 @@
 import { makeServiceDescriptor } from '../connection.js';
-import { connections } from '../../../strategiesTooling.js';
+import { connections, makeMessagesReader } from '../../../strategiesTooling.js';
 
 const makeSocketWrapper = socket => ({
   readyState: 0,
@@ -13,7 +13,11 @@ const makeSocketWrapper = socket => ({
   },
 
   set onmessage(fn) {
-    socket.on('data', buf => fn({ data: buf.toString() }));
+    const readMessages = makeMessagesReader();
+    socket.setEncoding('utf8');
+    socket.on('data', chunk => {
+      for (const data of readMessages(chunk)) fn({ data });
+    });
   },
 
   send(data, clb) {
