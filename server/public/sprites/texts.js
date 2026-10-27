@@ -11,6 +11,6 @@ export default Object.freeze({
   ].join('\n'),
   infoUrl: 'https://github.com/Andrew1407/gallows-remastered#readme',
   exitQuestion: 'Exit the game?',
-  rendererMissing: 'Neither WebGPU nor WebGL2 is available in this browser.',
+  rendererMissing: 'Neither WebGPU, WebGL2 nor Canvas 2D is available in this browser.',
   connectionFailed: 'Failed connecting to the game server.',
 });

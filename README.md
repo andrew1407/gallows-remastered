@@ -16,7 +16,7 @@ This project contains multiple implementation handling Hangman game logic. There
 The [browser](./server/public/) page has two versions picked by the `version` query param (try them on **[GitHub Pages](https://andrew1407.github.io/gallows-remastered/)**):
 
 + `?version=0` (default) - the **[ASCII](./server/public/ascii/)** client, as it is in the console: it connects to the server with the configured strategy (HTTP or WS) and falls back to a **local** mode (the [dataraw](./server/strategies/dataraw/) service running in the page with an in-memory db) when there's no server;
-+ `?version=1` - the **[2D sprites](./server/public/sprites/)** version rendered with **WebGPU** (**WebGL2** fallback): **offline** mode or online mode with a [dataraw](./server/strategies/dataraw/) server address - `http://host:port` or `ws://host:port/dataraw`.
++ `?version=1` - the **[2D sprites](./server/public/sprites/)** version rendered with **WebGPU** (**WebGL2**, then **Canvas 2D** fallback): **offline** mode or online mode with a [dataraw](./server/strategies/dataraw/) server address - `http://host:port` or `ws://host:port/dataraw`.
 
 The whole page is also built (with **vite**) into a single self-contained `dist/index.html` which can be opened straight from disk.
 
